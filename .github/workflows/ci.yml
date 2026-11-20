@@ -1,0 +1,56 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lua syntax
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.4
+          luac5.4 -p src/rt-rc.lua
+          echo "rt-rc.lua: syntax OK"
+
+      - name: PowerShell parse
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Recurse -Include *.ps1
+          $bad = 0
+          foreach ($f in $files) {
+            $errs = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errs)
+            if ($errs -and $errs.Count) {
+              Write-Host "::error file=$($f.FullName)::$($errs[0].Message)"
+              $bad++
+            } else {
+              Write-Host "OK  $($f.FullName)"
+            }
+          }
+          if ($bad -gt 0) { exit 1 }
+
+      - name: Encoding rules
+        shell: pwsh
+        run: |
+          $fail = 0
+          # .ps1 must be UTF-8 with BOM (Windows PowerShell 5.1 reads them as ANSI otherwise)
+          Get-ChildItem -Recurse -Include *.ps1 | ForEach-Object {
+            $b = [System.IO.File]::ReadAllBytes($_.FullName)
+            $bom = ($b.Length -ge 3 -and $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF)
+            if (-not $bom) { Write-Host "::error file=$($_.FullName)::missing UTF-8 BOM"; $fail++ }
+          }
+          # .vbs must not carry a BOM (Windows Script Host rejects it with 800A0408)
+          Get-ChildItem -Recurse -Include *.vbs | ForEach-Object {
+            $b = [System.IO.File]::ReadAllBytes($_.FullName)
+            if ($b.Length -ge 3 -and $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF) {
+              Write-Host "::error file=$($_.FullName)::.vbs must not have a BOM"; $fail++
+            }
+          }
+          if ($fail -gt 0) { exit 1 }
+          Write-Host "encoding rules OK"

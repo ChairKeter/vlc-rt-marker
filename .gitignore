@@ -1,0 +1,21 @@
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# personal / dev leftovers
+*.log
+*.bak
+*.bak-*
+vlcrc*
+keys.local.json
+
+# build output
+release/*.zip
+release/*.sha256
+release/*.txt
+dist/
+out/

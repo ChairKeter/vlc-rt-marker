@@ -1,0 +1,69 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check `docs/TROUBLESHOOTING.md` first, and attach the tails of
+        `%TEMP%\rt-rc.log` and `%TEMP%\vlc-rt-marker.log`.
+  - type: input
+    id: version
+    attributes:
+      label: Project version
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: vlc
+    attributes:
+      label: VLC version
+      placeholder: 3.0.23 Vetinari
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and build
+      placeholder: Windows 11 23H2 (22631.4317)
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. install
+        2. open a file
+        3. press R, wait 5 s, press T
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Last ~50 lines of both log files
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I looked at docs/TROUBLESHOOTING.md
+          required: true
+        - label: VLC was restarted after installing
+          required: true

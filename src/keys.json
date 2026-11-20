@@ -1,0 +1,6 @@
+﻿{
+  "_说明": "save/jump=按键；tips=false 表示不弹提示气泡（只写日志），改成 true 可恢复弹窗。支持 A-Z 0-9 F1-F12 SPACE INSERT DELETE HOME END PAGEUP PAGEDOWN 及常见符号。改完重启守护（关掉再双击 start-hidden.vbs）。",
+  "save": "R",
+  "jump": "T",
+  "tips": false
+}
